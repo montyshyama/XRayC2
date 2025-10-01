@@ -361,7 +361,7 @@ rm -f implant.go build.sh build_production.sh WINDOWS_NOTES.txt run.sh
 
 echo ""
 echo "====================================="
-echo "BUILD COMPLETED."
+echo "BUILD COMPLETE."
 echo ""
 echo "  - aws-cli (macOS)"
 echo "  - aws-cli.exe (Windows)"
