@@ -1,0 +1,8 @@
+# AWS X-Ray C2 Controller Dependencies
+# Python 3.10+ compatible
+
+# AWS SDK for Python
+boto3>=1.28.0,<2.0.0
+
+# Note: botocore is automatically installed as a boto3 dependency
+# All other imports (json, base64, time, threading, datetime, sys, readline, atexit, os) are part of Python's standard library
