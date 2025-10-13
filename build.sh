@@ -331,8 +331,8 @@ func main() {
 }
 EOF
 
-sed -i.bak "s/REPLACE_ACCESS_KEY/$ACCESS_KEY/g" implant_standalone.go
-sed -i.bak "s/REPLACE_SECRET_KEY/$SECRET_KEY/g" implant_standalone.go
+sed -i.bak "s#REPLACE_ACCESS_KEY#$ACCESS_KEY#g" implant_standalone.go
+sed -i.bak "s#REPLACE_SECRET_KEY#$SECRET_KEY#g" implant_standalone.go
 rm -f implant_standalone.go.bak
 
 echo "[*] Building macOS implant (zero dependencies)..."
