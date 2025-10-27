@@ -11,7 +11,8 @@ import time
 import threading
 from datetime import datetime, timedelta
 import sys
-import readline
+#import readline
+import gnureadline as readline
 import atexit
 import os
 
