@@ -27,7 +27,7 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"runtime"
 	"time"
 )
 
@@ -36,11 +36,14 @@ func main() {
 	secretKey := "REPLACE_SECRET_KEY"
 
 	fmt.Println("[*] X-Ray C2 Standalone Implant")
+	fmt.Println("    OS:", runtime.GOOS)
+	fmt.Println("    Arch:", runtime.GOARCH)
 	fmt.Println("    AWS Access Key:", accessKey)
 	fmt.Println("    AWS Secret Key:", secretKey)
+	fmt.Println("")
 
 	for {
-		fmt.Println("[*] Implant running at", time.Now())
+		fmt.Printf("[*] Heartbeat from %s/%s at %s\n", runtime.GOOS, runtime.GOARCH, time.Now().Format(time.RFC3339))
 		time.Sleep(10 * time.Second)
 	}
 }
